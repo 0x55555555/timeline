@@ -14,8 +14,8 @@ class Timeline
     @objects = []
   end
 
-  def add_object(time, object)
-    @objects << Instance.new(time, nil, object)
+  def add_object(time_create, time_destroy, object)
+    @objects << Instance.new(time_create, time_destroy, object)
   end
 
 end
@@ -23,4 +23,4 @@ end
 
 t = Timeline.new()
 
-t.add_object(0, {})
+t.add_object(0, Float::INFINITY, {})
