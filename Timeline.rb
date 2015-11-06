@@ -20,7 +20,25 @@ class Timeline
 
 end
 
+class Value
+  def initialize(&blk)
+    @block = blk
+  end
+
+  def sample(t)
+    return @block.call(t)
+  end
+end
 
 t = Timeline.new()
 
-t.add_object(0, Float::INFINITY, {})
+v = Value.new do |t|
+  next Math.sin(t)
+end
+
+t.add_object(0, Float::INFINITY, v)
+
+puts v.sample(0)
+puts v.sample(Math::PI/2)
+puts v.sample(Math::PI)
+puts v.sample(2 * Math::PI)
