@@ -7,6 +7,14 @@ class Instance
     @destruction_time = destroy
     @object = object
   end
+
+  def is_alive(t)
+    return t >= @creation_time && t <= @destruction_time
+  end
+
+  def sample(t)
+    return object.sample(self, t)
+  end
 end
 
 class Timeline
@@ -15,7 +23,9 @@ class Timeline
   end
 
   def add_object(time_create, time_destroy, object)
-    @objects << Instance.new(time_create, time_destroy, object)
+    inst = Instance.new(time_create, time_destroy, object)
+    @objects << inst
+    return inst
   end
 
 end
@@ -25,20 +35,24 @@ class Value
     @block = blk
   end
 
-  def sample(t)
-    return @block.call(t)
+  def sample(inst, t)
+    return @block.call(inst, t)
   end
 end
 
 t = Timeline.new()
 
-v = Value.new do |t|
-  next Math.sin(t)
+v = Value.new do |i, t|
+  if i.is_alive(t)
+    next Math.sin(t)
+  else
+    return 0
+  end
 end
 
-t.add_object(0, Float::INFINITY, v)
+inst = t.add_object(0, Float::INFINITY, v)
 
-puts v.sample(0)
-puts v.sample(Math::PI/2)
-puts v.sample(Math::PI)
-puts v.sample(2 * Math::PI)
+puts inst.sample(0)
+puts inst.sample(Math::PI/2)
+puts inst.sample(Math::PI)
+puts inst.sample(2 * Math::PI)
